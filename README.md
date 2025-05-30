@@ -1,4 +1,4 @@
-<h1 align="center"><span>MobilityGen</span></h1>
+<h1 align="center"><span> Isaac Sim Mobility Gen</span></h1>
 
 <div align="center">
 A toolset built on <a href="https://developer.nvidia.com/isaac/sim">NVIDIA Isaac Sim</a> that 
