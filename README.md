@@ -1,17 +1,11 @@
-<h1 align="center"><span> Isaac Sim Mobility Gen</span></h1>
+<h1 align="center"><span> Isaac Sim Mobility Generator</span></h1>
 
-<div align="center">
-A toolset built on <a href="https://developer.nvidia.com/isaac/sim">NVIDIA Isaac Sim</a> that
-allows you to easily collect data for mobile robots.
-<br></br>
-<div>
-<img src="assets/robots.png" width="640px"/>
-<img src="assets/gmg_screencast_scale.GIF" width="640px"/>
-</div>
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=jR9Ikk9bB9w" target="_blank">
+    <img src="assets/isaac_sim_mobility_gen.gif" alt="Video Thumbnail" width="80%">
+  </a>
+</p>
 
-Read below to learn more.
-
-</div>
 
 ## Overview
 
@@ -31,7 +25,6 @@ It supports
     - Depth Images
     - Instance Segmentation Images
     - Normals Images
-    - *If you're interested in more, [let us know!](https://github.com/NVlabs/MobilityGen/issues)*
 
 - ***Many robot types***
 
@@ -64,23 +57,19 @@ To get started with MobilityGen follow the setup and usage instructions below!
 <a id="setup"></a>
 ## 🛠️ Setup
 
-Follow these steps to set up MobilityGen
+Follow these steps to set up Isaac Sim Mobility Generator.
 
 ### Step 1 - Install Isaac Sim
 
-1. Download [Isaac Sim 4.5.0](https://docs.isaacsim.omniverse.nvidia.com/latest/installation/download.html)
-
-    > We'll assume you use the zip file and extract it to ``~/isaacsim``.
+1. Download [Isaac Sim 4.5.0](https://docs.isaacsim.omniverse.nvidia.com/latest/installation/download.html). Isaac Sim should be installed in ``~/isaacsim``.
 
 ### Step 2 - Clone this repository
 
 1. Clone the repository
 
     ```bash
-    git clone <repo_url> MobilityGen
+    https://github.com/ShalikAI/Isaac-Sim-Mobility-Gen-Tutorial.git
     ```
-
-> Remember the path you cloned to for the next step.
 
 ### Step 3 - Link Isaac Sim
 
@@ -89,7 +78,7 @@ Next, we'll call ``link_app.sh`` to link the Isaac Sim installation directory to
 1. Navigate to the repo root
 
     ```bash
-    cd MobilityGen
+    cd Isaac-Sim-Mobility-Gen-Tutorial
     ```
 
 2. Run the following to link the ``app`` folder and pass it the path to where you installed Isaac Sim
@@ -113,7 +102,7 @@ Next, we'll call ``link_app.sh`` to link the Isaac Sim installation directory to
 2. Navigate to the path planner directory
 
     ```bash
-    cd MobilityGen/path_planner
+    cd Isaac-Sim-Mobility-Gen-Tutorial/path_planner
     ```
 
 3. Install with pip using the Isaac Sim python interpreter
@@ -147,14 +136,14 @@ Read [Usage](#usage) below to learn how to generate data with MobilityGen.
 <a id="usage"></a>
 ## 👍 Basic Usage
 
-Below details a typical workflow for collecting data with MobilityGen.
+Below details a typical workflow for collecting data with Isaac-Sim-Mobility-Gen-Tutorial.
 
 ### Step 1 - Launch Isaac Sim
 
 1. Navigate to the repo root
 
     ```bash
-    cd MobilityGen
+    cd Isaac-Sim-Mobility-Gen-Tutorial
     ```
 
 2. Launch Isaac Sim with required extensions enabled by calling
@@ -220,7 +209,7 @@ Rendering the sensor data is done offline.  To do this call the following
 2. Navigate to the repo root
 
     ```bash
-    cd MobilityGen
+    cd Isaac-Sim-Mobility-Gen-Tutorial
     ```
 
 3. Run the ``scripts/replay_directory.py`` script to replay and render all recordings in the directory
@@ -241,7 +230,11 @@ We provide a few examples in the [examples](./examples) folder for working with 
 One example is using Gradio to explore all of the recordings in the replays directory.  To run this example,
 call the following
 
-1. Call the gradio data visualization example script
+1. Install Gradio in your system:
+    ```bash
+    python3 -m pip install gradio
+    ```
+2. Call the gradio data visualization example script
 
     ```bash
     python examples/04_visualize_gradio.py
@@ -281,7 +274,7 @@ This is the same as in the basic usage.
 1. Navigate to the repo root
 
     ```bash
-    cd MobilityGen
+    cd Isaac-Sim-Mobility-Gen-Tutorial
     ```
 
 2. Launch Isaac Sim with required extensions enabled by calling
@@ -463,7 +456,6 @@ type and the name.  (ie: rgb/robot.front_camera.left.depth_image).
 
 The name of each file corresponds to its physics timestep.
 
-If you have any questions regarding the data logged by MobilityGen, please [let us know!](https://github.com/NVlabs/MobilityGen/issues)
 
 ### Converting to the LeRobot Format
 
@@ -486,8 +478,3 @@ python ./scripts/convert_to_lerobot.py \
   --fps 30
 ```
 
-## 👏 Contributing
-This [Developer Certificate of Origin](https://developercertificate.org/) applies to this project.
-
-### Core Contributor
-John Welsh, Huihua Zhao, Vikram Ramasamy, Wei Liu, Joydeep Biswas, Soha Pouya, Yan Chang
