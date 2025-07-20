@@ -351,6 +351,50 @@ We recommend referencing the example scenarios in [scenarios.py](exts/omni.ext.m
 A good way to start could be simply by modifying an existing scenario.  For example, you might implement a new method
 for generating random motions.
 
+## Publish as ROS2 topics
+You can publish the data once the rendering is finished. Convert the data as ROS2 topics:
+```
+python3 examples/mgen_to_mcap.py   --input ~/MobilityGenData/replays/2025-07-19T10:08:32.202022   --output ~/MobilityGenData/rosbags/2025-07-19.mcap   --hz 1.0
+```
+Here are the topics the rosbag will have:
+```
+arghya@arghya-Pulse-GL66-12UEK:~/MobilityGenData/rosbags$ ros2 bag info 2025-07-19.mcap/
+
+Files:             2025-07-19.db3_0.db3
+Bag size:          1.4 GiB
+Storage id:        sqlite3
+Duration:          67.000000000s
+Start:             Dec 31 1969 19:00:00.000000000 (0.000000000)
+End:               Dec 31 1969 19:01:07.000000000 (67.000000000)
+Messages:          953
+Topic information: Topic: /normals/image/robot_front_camera_left_normals_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
+                   Topic: /base_pose | Type: geometry_msgs/msg/PoseStamped | Count: 68 | Serialization Format: cdr
+                   Topic: /tf_static | Type: tf2_msgs/msg/TFMessage | Count: 1 | Serialization Format: cdr
+                   Topic: /tf | Type: tf2_msgs/msg/TFMessage | Count: 68 | Serialization Format: cdr
+                   Topic: /segmentation/image/robot_front_camera_left_instance_id_segmentation_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
+                   Topic: /normals/image/robot_front_camera_right_normals_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
+                   Topic: /left_camera_pose | Type: geometry_msgs/msg/PoseStamped | Count: 68 | Serialization Format: cdr
+                   Topic: /rgb/image_raw/robot_front_camera_left_rgb_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
+                   Topic: /joint_states | Type: sensor_msgs/msg/JointState | Count: 68 | Serialization Format: cdr
+                   Topic: /depth/image_raw/robot_front_camera_right_depth_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
+                   Topic: /segmentation/image/robot_front_camera_left_segmentation_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
+                   Topic: /rgb/image_raw/robot_front_camera_right_rgb_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
+                   Topic: /segmentation/image/robot_front_camera_right_instance_id_segmentation_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
+                   Topic: /segmentation/image/robot_front_camera_right_segmentation_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
+                   Topic: /depth/image_raw/robot_front_camera_left_depth_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
+```
+If you want to publish the robot state and visualize the robot model in rviz, do the following
+```
+ros2 run robot_state_publisher robot_state_publisher   --ros-args -p robot_description:="$(cat ~/Isaac-Sim-MobilityGen/h1_description/urdf/h1.urdf)"
+```
+Now, open the rviz and load the rviz file from this repo. You will see the output something like this below.
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=jR9Ikk9bB9w" target="_blank">
+    <img src="assets/isaac_sim_rosbag.gif" alt="Video Thumbnail" width="80%">
+  </a>
+</p>
+
 ## 📝 Data Format
 
 MobilityGen records two types of data.
@@ -372,6 +416,98 @@ MobilityGen records two types of data.
         - Segmentation image / info
         - Instance Segmentation
         - Normals
+
+If you want to see the joints:
+```
+$ python3 examples/list_h1_joints.py 
+```
+Here is the output:
+```
+H1 actuated joints (array index → name):
+  # 0: left_hip_yaw_joint
+  # 1: left_hip_roll_joint
+  # 2: left_hip_pitch_joint
+  # 3: left_knee_joint
+  # 4: left_ankle_joint
+  # 5: right_hip_yaw_joint
+  # 6: right_hip_roll_joint
+  # 7: right_hip_pitch_joint
+  # 8: right_knee_joint
+  # 9: right_ankle_joint
+  #10: torso_joint
+  #11: left_shoulder_pitch_joint
+  #12: left_shoulder_roll_joint
+  #13: left_shoulder_yaw_joint
+  #14: left_elbow_joint
+  #15: right_shoulder_pitch_joint
+  #16: right_shoulder_roll_joint
+  #17: right_shoulder_yaw_joint
+  #18: right_elbow_joint
+```
+If you want to see the keys:
+```
+python3 examples/inspect_common_folder.py ~/MobilityGenData/replays/2025-07-19T10:08:32.202022/state/common --num 1
+```
+The output was the following:
+```
+Found 68 .npy files. Inspecting first 1:
+
+File: /home/arghya/MobilityGenData/replays/2025-07-19T10:08:32.202022/state/common/00000000.npy
+  Type: <class 'numpy.ndarray'>
+  Structure (keys and types/shapes):
+    - robot.action: array, dtype=float64, shape=(2,)
+    - robot.position: array, dtype=float32, shape=(3,)
+    - robot.orientation: array, dtype=float32, shape=(4,)
+    - robot.joint_positions: array, dtype=float32, shape=(19,)
+    - robot.joint_velocities: array, dtype=float32, shape=(19,)
+    - robot.front_camera.left.segmentation_info: <class 'dict'>, value={'idToLabels': {'0': {'class': 'BACKGROUND'}, '1': {'class': 'UNLABELLED'}, '2': {'class': 'rack'}, '3': {'class': 'pallet'}, '4': {'class': 'floor'}, '5': {'class': 'wall'}, '7': {'class': 'box'}, '8': {'class': 'pillar'}, '9': {'class': 'sign'}, '11': {'class': 'fire_extinguisher'}, '12': {'class': 'floor_decal'}, '13': {'class': 'crate'}}}
+    - robot.front_camera.left.instance_id_segmentation_info: <class 'dict'>, value={'idToLabels': {'1': 'INVALID', '8': 'INVALID', '1892': '/World/robot/left_ankle_link/visuals', '1255': '/World/scene/PalletBin_02/Roller/SmallKLT_Visual_118/Visuals/FOF_Mesh_Label_1', '1686': '/World/scene/PalletBin_01/Roller/SmallKLT_Visual_130/Visuals/FOF_Mesh_Magenta_Box', '1601': '/World/scene/PalletBin_01/Roller/SmallKLT_Visual_132/Visuals/FOF_Mesh_Magenta_Box',
+    ....
+    '1349': '/World/scene/Shelf_0/S_AisleSign_47/S_AisleSign'}}
+    - robot.front_camera.right.position: array, dtype=float32, shape=(3,)
+    - robot.front_camera.right.orientation: array, dtype=float32, shape=(4,)
+    - keyboard.buttons: array, dtype=bool, shape=(4,)
+```
+If you want to inspect joints:
+```
+python3 examples/inspect_joints.py ~/MobilityGenData/replays/2025-07-19T10:08:32.202022/state/common --frame 0
+```
+Here is the output:
+```
+Frame 00:
+  Joint positions (shape (19,)):
+    [ 0.0285178  -0.06889407 -0.00940297 -0.03465765 -0.02505827  0.3011327
+  0.27076805 -0.6683024  -0.59880084 -0.0539261  -0.02191565  1.4317086
+  1.2333937   0.0024948  -0.00682147 -0.6336425  -0.7075511   0.5251975
+  0.5055799 ]
+  Joint velocities(shape (19,)):
+    [ 2.9184083e-02  1.4257843e-02 -2.9104811e-03  7.8836689e-03
+ -3.1841312e-02 -2.3049731e-03  3.5154899e-03  5.5881063e-03
+  5.8478154e-03 -6.4434828e-03  2.9966049e-03 -2.0087871e-03
+  7.8600556e-02  8.9578883e-04  1.2077199e-03 -1.3268487e-04
+ -1.3865213e+00 -1.3560086e-05  7.1849755e-04]
+
+Index → value (position, velocity):
+  # 0:  pos=0.0285, vel=0.0292
+  # 1:  pos=-0.0689, vel=0.0143
+  # 2:  pos=-0.0094, vel=-0.0029
+  # 3:  pos=-0.0347, vel=0.0079
+  # 4:  pos=-0.0251, vel=-0.0318
+  # 5:  pos=0.3011, vel=-0.0023
+  # 6:  pos=0.2708, vel=0.0035
+  # 7:  pos=-0.6683, vel=0.0056
+  # 8:  pos=-0.5988, vel=0.0058
+  # 9:  pos=-0.0539, vel=-0.0064
+  #10:  pos=-0.0219, vel=0.0030
+  #11:  pos=1.4317, vel=-0.0020
+  #12:  pos=1.2334, vel=0.0786
+  #13:  pos=0.0025, vel=0.0009
+  #14:  pos=-0.0068, vel=0.0012
+  #15:  pos=-0.6336, vel=-0.0001
+  #16:  pos=-0.7076, vel=-1.3865
+  #17:  pos=0.5252, vel=-0.0000
+  #18:  pos=0.5056, vel=0.0007
+```
 
 This data can easily be read using the [Reader](./examples/reader.py) class.
 
@@ -456,6 +592,7 @@ type and the name.  (ie: rgb/robot.front_camera.left.depth_image).
 
 The name of each file corresponds to its physics timestep.
 
+If you have any questions regarding the data logged by MobilityGen, please [let us know!](https://github.com/NVlabs/MobilityGen/issues)
 
 ### Converting to the LeRobot Format
 
@@ -477,4 +614,3 @@ python ./scripts/convert_to_lerobot.py \
   --batch \
   --fps 30
 ```
-
