@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=sXSWYkoECMg" target="_blank">
-    <img src="assets/IsaacSimMobilityGeneratorROS2.gif" alt="Video Thumbnail" width="80%">
+    <img src="assets/IsaacSimMobilityGeneratorROS2.gif" alt="Video Thumbnail" width="100%">
   </a>
 </p>
 
@@ -47,14 +47,22 @@ To get started with MobilityGen follow the setup and usage instructions below!
 
 ## Table of Contents
 
-- [🛠️ Setup](#setup)
-- [👍 Basic Usage](#usage)
-- [💡 How To Guides](#guides)
+- [Requirements](#requirements)
+- [Setup](#setup)
+- [Basic Usage](#usage)
+- [How To Guides](#guides)
     - [How to record procedural data](#how-to-procedural-data)
     - [How to implement a custom robot](#how-to-custom-robot)
     - [How to implement a custom scenario](#how-to-custom-scenario)
-- [📝 Data Format](#-data-format)
-- [👏 Contributing](#-contributing)
+- [Data Format](#-data-format)
+- [Convert to ROS Format](#ros2)
+- [Convert to LeRobot Format](#lerobot)
+- [Debugging](#debugging)
+
+<a id="requirements"></a>
+## Requirements
+
+This work has been tested on Ubuntu 22.04, IsaacSim-4.5, Nvidia RTX 3060 with 6GB VRAM, Cuda 12.4 and Python 3.10.
 
 <a id="setup"></a>
 ## Setup
@@ -70,7 +78,7 @@ Follow these steps to set up Isaac Sim Mobility Generator.
 1. Clone the repository
 
     ```bash
-    https://github.com/ShalikAI/Isaac-Sim-Mobility-Gen-Tutorial.git
+    https://github.com/ShalikAI/Isaac-Sim-Mobility-Generator.git
     ```
 
 ### Step 3 - Link Isaac Sim
@@ -80,7 +88,7 @@ Next, we'll call ``link_app.sh`` to link the Isaac Sim installation directory to
 1. Navigate to the repo root
 
     ```bash
-    cd Isaac-Sim-Mobility-Gen-Tutorial
+    cd Isaac-Sim-Mobility-Generator
     ```
 
 2. Run the following to link the ``app`` folder and pass it the path to where you installed Isaac Sim
@@ -104,7 +112,7 @@ Next, we'll call ``link_app.sh`` to link the Isaac Sim installation directory to
 2. Navigate to the path planner directory
 
     ```bash
-    cd ~/Isaac-Sim-Mobility-Gen-Tutorial/path_planner
+    cd ~/Isaac-Sim-Mobility-Generator/path_planner
     ```
 
 3. Install with pip using the Isaac Sim python interpreter
@@ -120,7 +128,7 @@ Next, we'll call ``link_app.sh`` to link the Isaac Sim installation directory to
 1. Navigate to the repo root
 
     ```bash
-    cd ~/Isaac-Sim-Mobility-Gen-Tutorial
+    cd ~/Isaac-Sim-Mobility-Generator
     ```
 
 2. Launch Isaac Sim with required extensions enabled by calling
@@ -131,21 +139,23 @@ Next, we'll call ``link_app.sh`` to link the Isaac Sim installation directory to
 
 That's it!  If everything worked, you should see Isaac Sim open with a window titled ``MobilityGen`` appear.
 
-<img src="./assets/extension_gui.png" height="640px">
+<div align="center">
+  <img src="assets/extension_gui.png" width="400">
+</div>
 
 Read [Usage](#usage) below to learn how to generate data with MobilityGen.
 
 <a id="usage"></a>
 ## Basic Usage
 
-Below details a typical workflow for collecting data with Isaac-Sim-Mobility-Gen-Tutorial.
+Below details a typical workflow for collecting data with Isaac-Sim-Mobility-Generator.
 
 ### Step 1 - Launch Isaac Sim
 
 1. Navigate to the repo root
 
     ```bash
-    cd Isaac-Sim-Mobility-Gen-Tutorial
+    cd Isaac-Sim-Mobility-Generator
     ```
 
 2. Launch Isaac Sim with required extensions enabled by calling
@@ -217,7 +227,7 @@ Rendering the sensor data is done offline.  To do this call the following
 2. Navigate to the repo root
 
     ```bash
-    cd Isaac-Sim-Mobility-Gen-Tutorial
+    cd Isaac-Sim-Mobility-Generator
     ```
 
 3. Run the ``scripts/replay_directory.py`` script to replay and render all recordings in the directory
@@ -292,7 +302,7 @@ This is the same as in the basic usage.
 1. Navigate to the repo root
 
     ```bash
-    cd Isaac-Sim-Mobility-Gen-Tutorial
+    cd Isaac-Sim-Mobility-Generator
     ```
 
 2. Launch Isaac Sim with required extensions enabled by calling
@@ -605,7 +615,9 @@ type and the name.  (ie: rgb/robot.front_camera.left.depth_image).
 
 The name of each file corresponds to its physics timestep.
 
+<a id="ros2"></a>
 ## Convert to ROS2 Format
+
 You can publish the data once the rendering is finished. Convert the data as ROS2 topics:
 ```
 python3 examples/mgen_to_mcap.py   --input ~/MobilityGenData/replays/2025-07-19T10:08:32.202022   --output ~/MobilityGenData/rosbags/2025-07-19.mcap   --hz 1.0
@@ -690,6 +702,7 @@ float64[] velocity
 float64[] effort
 ```
 
+<a id="lerobot"></a>
 ## Convert to the LeRobot Format
 
 A script that converts a MobilityGen recording/replay to a [LeRobot](https://github.com/huggingface/lerobot) dataset can be found at [scripts/convert_to_lerobot.py](./scripts/convert_to_lerobot.py). The [LeRobot Python package](https://github.com/huggingface/lerobot?tab=readme-ov-file#installation) needs to be installed before executing the script.
@@ -711,6 +724,7 @@ python ./scripts/convert_to_lerobot.py \
   --fps 30
 ```
 
+<a id="debugging"></a>
 ## Debugging
 ### Problem 1:
 There are some issues with the joint states since the rendering is done in `USD` format and we are trying to convert to ros2 compatible `URDF` format. Here is the joint order:
@@ -789,7 +803,7 @@ Orientation:
 Here is a visualization of the error:
 
 <div align="center">
-  <img src="assets/camera_pose_coordinate_wrong.png" width="400">
+  <img src="assets/camera_pose_coordinate_wrong.png" width="600">
 </div>
 
 There are 3 pose topics that we are publishing:
