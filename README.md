@@ -1,8 +1,10 @@
 <h1 align="center"><span> Isaac Sim Mobility Generator</span></h1>
 
+
+
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=jR9Ikk9bB9w" target="_blank">
-    <img src="assets/isaac_sim_mobility_gen.gif" alt="Video Thumbnail" width="80%">
+  <a href="https://www.youtube.com/watch?v=sXSWYkoECMg" target="_blank">
+    <img src="assets/IsaacSimMobilityGeneratorROS2.gif" alt="Video Thumbnail" width="80%">
   </a>
 </p>
 
@@ -55,7 +57,7 @@ To get started with MobilityGen follow the setup and usage instructions below!
 - [👏 Contributing](#-contributing)
 
 <a id="setup"></a>
-## 🛠️ Setup
+## Setup
 
 Follow these steps to set up Isaac Sim Mobility Generator.
 
@@ -102,7 +104,7 @@ Next, we'll call ``link_app.sh`` to link the Isaac Sim installation directory to
 2. Navigate to the path planner directory
 
     ```bash
-    cd Isaac-Sim-Mobility-Gen-Tutorial/path_planner
+    cd ~/Isaac-Sim-Mobility-Gen-Tutorial/path_planner
     ```
 
 3. Install with pip using the Isaac Sim python interpreter
@@ -118,7 +120,7 @@ Next, we'll call ``link_app.sh`` to link the Isaac Sim installation directory to
 1. Navigate to the repo root
 
     ```bash
-    cd MobilityGen
+    cd ~/Isaac-Sim-Mobility-Gen-Tutorial
     ```
 
 2. Launch Isaac Sim with required extensions enabled by calling
@@ -134,7 +136,7 @@ That's it!  If everything worked, you should see Isaac Sim open with a window ti
 Read [Usage](#usage) below to learn how to generate data with MobilityGen.
 
 <a id="usage"></a>
-## 👍 Basic Usage
+## Basic Usage
 
 Below details a typical workflow for collecting data with Isaac-Sim-Mobility-Gen-Tutorial.
 
@@ -198,6 +200,12 @@ Once you're comfortable, you can record a log.
 
 The data is recorded to ``~/MobilityGenData/recordings`` by default.
 
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=jR9Ikk9bB9w" target="_blank">
+    <img src="assets/isaac_sim_mobility_gen.gif" alt="Video Thumbnail" width="80%">
+  </a>
+</p>
+
 ### Step 6 - Render data
 
 If you've gotten this far, you've recorded a trajectory, but it doesn't include the rendered sensor data.
@@ -215,13 +223,23 @@ Rendering the sensor data is done offline.  To do this call the following
 3. Run the ``scripts/replay_directory.py`` script to replay and render all recordings in the directory
 
     ```bash
-    python scripts/replay_directory.py --render_interval=200
+    python3 scripts/replay_directory.py --render_interval=200
     ```
 
     > Note: For speed for this tutorial, we use a render interval of 200.  If our physics timestep is 200 FPS, this means we
     > render 1 image per second.
 
-That's it! Now the data with renderings should be stored in ``~/MobilityGenData/replays``.
+If you have `num_steps = 10,000` simulation steps and `--render_interval=200`, then it only replays and renders every 200th frame, i.e., at frames:0, 200, 400, ..., 9800.
+
+If you change it to `--render_interval=2000`,
+you’ll be rendering even fewer frames only at: 0, 2000, 4000, 6000, 8000 (i.e., 5 frames from 10,000).
+
+
+High value (e.g., 2000): For quick preview or sparse sampling, less rendering time.
+
+Low value (e.g., 1, 10, 100): For dense re-rendering, e.g., when high-fidelity output is needed for training or analysis.
+
+The data with renderings should be stored in ``~/MobilityGenData/replays``.
 
 ### Step 7 - Visualize the Data
 
@@ -237,7 +255,7 @@ call the following
 2. Call the gradio data visualization example script
 
     ```bash
-    python examples/04_visualize_gradio.py
+    python3 examples/04_visualize_gradio.py
     ```
 
 2. Open your web browser to ``http://127.0.0.1:7860`` to explore the data
@@ -262,7 +280,7 @@ If you find MobilityGen helpful for your use case, run in to issues, or have any
 <a id="contributing"></a>
 
 <a id="usage"></a>
-## 💡 How To Guides
+## How To Guides
 
 <a id="how-to-procedural-data"></a>
 ### How to record procedural data
@@ -351,50 +369,6 @@ We recommend referencing the example scenarios in [scenarios.py](exts/omni.ext.m
 A good way to start could be simply by modifying an existing scenario.  For example, you might implement a new method
 for generating random motions.
 
-## Publish as ROS2 topics
-You can publish the data once the rendering is finished. Convert the data as ROS2 topics:
-```
-python3 examples/mgen_to_mcap.py   --input ~/MobilityGenData/replays/2025-07-19T10:08:32.202022   --output ~/MobilityGenData/rosbags/2025-07-19.mcap   --hz 1.0
-```
-Here are the topics the rosbag will have:
-```
-arghya@arghya-Pulse-GL66-12UEK:~/MobilityGenData/rosbags$ ros2 bag info 2025-07-19.mcap/
-
-Files:             2025-07-19.db3_0.db3
-Bag size:          1.4 GiB
-Storage id:        sqlite3
-Duration:          67.000000000s
-Start:             Dec 31 1969 19:00:00.000000000 (0.000000000)
-End:               Dec 31 1969 19:01:07.000000000 (67.000000000)
-Messages:          953
-Topic information: Topic: /normals/image/robot_front_camera_left_normals_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
-                   Topic: /base_pose | Type: geometry_msgs/msg/PoseStamped | Count: 68 | Serialization Format: cdr
-                   Topic: /tf_static | Type: tf2_msgs/msg/TFMessage | Count: 1 | Serialization Format: cdr
-                   Topic: /tf | Type: tf2_msgs/msg/TFMessage | Count: 68 | Serialization Format: cdr
-                   Topic: /segmentation/image/robot_front_camera_left_instance_id_segmentation_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
-                   Topic: /normals/image/robot_front_camera_right_normals_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
-                   Topic: /left_camera_pose | Type: geometry_msgs/msg/PoseStamped | Count: 68 | Serialization Format: cdr
-                   Topic: /rgb/image_raw/robot_front_camera_left_rgb_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
-                   Topic: /joint_states | Type: sensor_msgs/msg/JointState | Count: 68 | Serialization Format: cdr
-                   Topic: /depth/image_raw/robot_front_camera_right_depth_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
-                   Topic: /segmentation/image/robot_front_camera_left_segmentation_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
-                   Topic: /rgb/image_raw/robot_front_camera_right_rgb_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
-                   Topic: /segmentation/image/robot_front_camera_right_instance_id_segmentation_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
-                   Topic: /segmentation/image/robot_front_camera_right_segmentation_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
-                   Topic: /depth/image_raw/robot_front_camera_left_depth_image | Type: sensor_msgs/msg/Image | Count: 68 | Serialization Format: cdr
-```
-If you want to publish the robot state and visualize the robot model in rviz, do the following
-```
-ros2 run robot_state_publisher robot_state_publisher   --ros-args -p robot_description:="$(cat ~/Isaac-Sim-MobilityGen/h1_description/urdf/h1.urdf)"
-```
-Now, open the rviz and load the rviz file from this repo. You will see the output something like this below.
-
-<p align="center">
-  <a href="https://www.youtube.com/watch?v=jR9Ikk9bB9w" target="_blank">
-    <img src="assets/isaac_sim_rosbag.gif" alt="Video Thumbnail" width="80%">
-  </a>
-</p>
-
 ## 📝 Data Format
 
 MobilityGen records two types of data.
@@ -417,36 +391,62 @@ MobilityGen records two types of data.
         - Instance Segmentation
         - Normals
 
-If you want to see the joints:
+# Inspect Data
+If you want to inspect the pose:
 ```
-$ python3 examples/list_h1_joints.py 
+python3 examples/inspect_poses.py ~/MobilityGenData/replays/2025-07-19T10:08:32.202022/state/common 1
 ```
 Here is the output:
 ```
-H1 actuated joints (array index → name):
-  # 0: left_hip_yaw_joint
-  # 1: left_hip_roll_joint
-  # 2: left_hip_pitch_joint
-  # 3: left_knee_joint
-  # 4: left_ankle_joint
-  # 5: right_hip_yaw_joint
-  # 6: right_hip_roll_joint
-  # 7: right_hip_pitch_joint
-  # 8: right_knee_joint
-  # 9: right_ankle_joint
-  #10: torso_joint
-  #11: left_shoulder_pitch_joint
-  #12: left_shoulder_roll_joint
-  #13: left_shoulder_yaw_joint
-  #14: left_elbow_joint
-  #15: right_shoulder_pitch_joint
-  #16: right_shoulder_roll_joint
-  #17: right_shoulder_yaw_joint
-  #18: right_elbow_joint
+Frame 00:
+  raw pos = [5.4326077  1.480456   0.89978415]
+  raw quat = [-0.60124445 -0.0496252   0.00937337  0.7974676 ]
+  → roll=-74.2°, pitch=-3.9°, yaw=4.3°
 ```
-If you want to see the keys:
+If you want to inspect the segmentation images:
 ```
-python3 examples/inspect_common_folder.py ~/MobilityGenData/replays/2025-07-19T10:08:32.202022/state/common --num 1
+python3 examples/inspect_segmentation.py ~/MobilityGenData/replays/2025-07-19T10:08:32.202022/state/segmentation --num 1
+```
+Here is the output:
+```
+Folder: robot.front_camera.left.instance_id_segmentation_image
+  Total files: 68
+  File: 00000000.png
+    dtype: int32, shape: (600, 960)
+    unique labels: 100
+    top-5 labels (label:count): [(1860, 154310), (1199, 151885), (1295, 75824), (1271, 35472), (499, 17373)]
+
+Folder: robot.front_camera.left.segmentation_image
+  Total files: 68
+  File: 00000000.png
+    dtype: int32, shape: (600, 960)
+    unique labels: 11
+    top-5 labels (label:count): [(4, 457476), (5, 73639), (2, 18635), (3, 9636), (8, 7260)]
+
+```
+If you want to inspect the normal images:
+```
+python3 examples/inspect_normals.py ~/MobilityGenData/replays/2025-07-19T10:08:32.202022/state/normals --num 1
+```
+Here is the output:
+```
+Camera folder: robot.front_camera.left.normals_image
+  File: 00000000.npy
+    dtype: float32
+    shape: (600, 960, 4)
+    min/max: -1.0000 / 1.0000
+    mean/std: 0.4690 / 0.5292
+
+Camera folder: robot.front_camera.right.normals_image
+  File: 00000000.npy
+    dtype: float32
+    shape: (600, 960, 4)
+    min/max: -1.0000 / 1.0000
+    mean/std: 0.4705 / 0.5279
+```
+If you want to inspect the common files:
+```
+python3 examples/inspect_common_file.py ~/MobilityGenData/replays/2025-07-19T10:08:32.202022/state/common --num 1
 ```
 The output was the following:
 ```
@@ -460,15 +460,17 @@ File: /home/arghya/MobilityGenData/replays/2025-07-19T10:08:32.202022/state/comm
     - robot.orientation: array, dtype=float32, shape=(4,)
     - robot.joint_positions: array, dtype=float32, shape=(19,)
     - robot.joint_velocities: array, dtype=float32, shape=(19,)
-    - robot.front_camera.left.segmentation_info: <class 'dict'>, value={'idToLabels': {'0': {'class': 'BACKGROUND'}, '1': {'class': 'UNLABELLED'}, '2': {'class': 'rack'}, '3': {'class': 'pallet'}, '4': {'class': 'floor'}, '5': {'class': 'wall'}, '7': {'class': 'box'}, '8': {'class': 'pillar'}, '9': {'class': 'sign'}, '11': {'class': 'fire_extinguisher'}, '12': {'class': 'floor_decal'}, '13': {'class': 'crate'}}}
-    - robot.front_camera.left.instance_id_segmentation_info: <class 'dict'>, value={'idToLabels': {'1': 'INVALID', '8': 'INVALID', '1892': '/World/robot/left_ankle_link/visuals', '1255': '/World/scene/PalletBin_02/Roller/SmallKLT_Visual_118/Visuals/FOF_Mesh_Label_1', '1686': '/World/scene/PalletBin_01/Roller/SmallKLT_Visual_130/Visuals/FOF_Mesh_Magenta_Box', '1601': '/World/scene/PalletBin_01/Roller/SmallKLT_Visual_132/Visuals/FOF_Mesh_Magenta_Box',
-    ....
-    '1349': '/World/scene/Shelf_0/S_AisleSign_47/S_AisleSign'}}
+    - robot.front_camera.left.segmentation_info: <class 'dict'>, value={'idToLabels': {'0': {'class': 'BACKGROUND'}, '1': {'class': 'UNLABELLED'}, '2': {'class': 'rack'}, 
+    - robot.front_camera.left.instance_id_segmentation_info: <class 'dict'>, value={'idToLabels': {'1': 'INVALID', '8': 'INVALID',...
+    - robot.front_camera.left.position: array, dtype=float32, shape=(3,)
+    - robot.front_camera.left.orientation: array, dtype=float32, shape=(4,)
+    - robot.front_camera.right.segmentation_info: <class 'dict'>, value={'idToLabels': {'0': {'class': 'BACKGROUND'}, '1': {'class': 'UNLABELLED'},....
+    - robot.front_camera.right.instance_id_segmentation_info: <class 'dict'>, value={'idToLabels': {'1': 'INVALID', '8': 'INVALID',...
     - robot.front_camera.right.position: array, dtype=float32, shape=(3,)
     - robot.front_camera.right.orientation: array, dtype=float32, shape=(4,)
     - keyboard.buttons: array, dtype=bool, shape=(4,)
 ```
-If you want to inspect joints:
+If you want to inspect the joints and their states:
 ```
 python3 examples/inspect_joints.py ~/MobilityGenData/replays/2025-07-19T10:08:32.202022/state/common --frame 0
 ```
@@ -507,6 +509,17 @@ Index → value (position, velocity):
   #16:  pos=-0.7076, vel=-1.3865
   #17:  pos=0.5252, vel=-0.0000
   #18:  pos=0.5056, vel=0.0007
+```
+If you want to inspect the robot actions (Linear and Angular Command Velocity):
+```
+python3 examples/inspect_actions.py ~/MobilityGenData/replays/2025-07-19T10:08:32.202022/state/common --frame 0
+```
+Here is the output:
+```
+Frame 20:
+  robot.action (shape (2,), dtype=float64):
+    #0: 1.000000
+    #1: 0.000000
 ```
 
 This data can easily be read using the [Reader](./examples/reader.py) class.
@@ -592,9 +605,92 @@ type and the name.  (ie: rgb/robot.front_camera.left.depth_image).
 
 The name of each file corresponds to its physics timestep.
 
-If you have any questions regarding the data logged by MobilityGen, please [let us know!](https://github.com/NVlabs/MobilityGen/issues)
+## Convert to ROS2 Format
+You can publish the data once the rendering is finished. Convert the data as ROS2 topics:
+```
+python3 examples/mgen_to_mcap.py   --input ~/MobilityGenData/replays/2025-07-19T10:08:32.202022   --output ~/MobilityGenData/rosbags/2025-07-19.mcap   --hz 1.0
+```
+If you have exported 10 samples per second, use `--hz 10.0` instead.
+Here are the topics the rosbag will have if you export at `10 hz`:
+```
+arghya@arghya-Pulse-GL66-12UEK:~/MobilityGenData/rosbags$ ros2 bag info 2025-07-24.mcap/
 
-### Converting to the LeRobot Format
+Files:             2025-07-24.mcap_0.mcap
+Bag size:          9.8 GiB
+Storage id:        mcap
+Duration:          90.700000000s
+Start:             Dec 31 1969 19:00:00.000000000 (0.000000000)
+End:               Dec 31 1969 19:01:30.700000000 (90.700000000)
+Messages:          13621
+Topic information: Topic: /normals/image/robot_front_camera_left_normals_image | Type: sensor_msgs/msg/Image | Count: 908 | Serialization Format: cdr
+                   Topic: /depth/image_raw/robot_front_camera_right_depth_image | Type: sensor_msgs/msg/Image | Count: 908 | Serialization Format: cdr
+                   Topic: /pelvis_pose | Type: geometry_msgs/msg/PoseStamped | Count: 908 | Serialization Format: cdr
+                   Topic: /tf | Type: tf2_msgs/msg/TFMessage | Count: 908 | Serialization Format: cdr
+                   Topic: /normals/image/robot_front_camera_right_normals_image | Type: sensor_msgs/msg/Image | Count: 908 | Serialization Format: cdr
+                   Topic: /left_camera_pose | Type: geometry_msgs/msg/PoseStamped | Count: 908 | Serialization Format: cdr
+                   Topic: /rgb/image_raw/robot_front_camera_left_rgb_image | Type: sensor_msgs/msg/Image | Count: 908 | Serialization Format: cdr
+                   Topic: /tf_static | Type: tf2_msgs/msg/TFMessage | Count: 1 | Serialization Format: cdr
+                   Topic: /right_camera_pose | Type: geometry_msgs/msg/PoseStamped | Count: 908 | Serialization Format: cdr
+                   Topic: /rgb/image_raw/robot_front_camera_right_rgb_image | Type: sensor_msgs/msg/Image | Count: 908 | Serialization Format: cdr
+                   Topic: /joint_states | Type: sensor_msgs/msg/JointState | Count: 908 | Serialization Format: cdr
+                   Topic: /segmentation/semantic/robot_front_camera_left_segmentation_image | Type: sensor_msgs/msg/Image | Count: 908 | Serialization Format: cdr
+                   Topic: /segmentation/instance_id/robot_front_camera_left_instance_id_segmentation_image | Type: sensor_msgs/msg/Image | Count: 908 | Serialization Format: cdr
+                   Topic: /segmentation/instance_id/robot_front_camera_right_instance_id_segmentation_image | Type: sensor_msgs/msg/Image | Count: 908 | Serialization Format: cdr
+                   Topic: /segmentation/semantic/robot_front_camera_right_segmentation_image | Type: sensor_msgs/msg/Image | Count: 908 | Serialization Format: cdr
+                   Topic: /depth/image_raw/robot_front_camera_left_depth_image | Type: sensor_msgs/msg/Image | Count: 908 | Serialization Format: cdr
+```
+Play the rosbag in the following way:
+```
+cd ~/MobilityGenData/rosbags
+ros2 bag play 2025-07-24.mcap/2025-07-24.mcap_0.mcap
+```
+If you want to publish the robot state and visualize the robot model along with joint states in rviz, do the following
+```
+ros2 run robot_state_publisher robot_state_publisher   --ros-args -p robot_description:="$(cat ~/Isaac-Sim-Mobility-Generator-Tutorial/h1_description/urdf/h1.urdf)"
+```
+Now, open the rviz:
+```
+rviz2
+```
+Load the rviz file from this repo. You will see the output something like this below.
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=sXSWYkoECMg" target="_blank">
+    <img src="assets/mobility_gen_ros.png" alt="Video Thumbnail" width="80%">
+  </a>
+</p>
+
+Joint States are published as `sensor_msgs/JointState.msg`. The  message can be broken down like this:
+```
+# This is a message that holds data to describe the state of a set of torque controlled joints. 
+#
+# The state of each joint (revolute or prismatic) is defined by:
+#  * the position of the joint (rad or m),
+#  * the velocity of the joint (rad/s or m/s) and 
+#  * the effort that is applied in the joint (Nm or N).
+#
+# Each joint is uniquely identified by its name
+# The header specifies the time at which the joint states were recorded. All the joint states
+# in one message have to be recorded at the same time.
+#
+# This message consists of a multiple arrays, one for each part of the joint state. 
+# The goal is to make each of the fields optional. When e.g. your joints have no
+# effort associated with them, you can leave the effort array empty. 
+#
+# All arrays in this message should have the same size, or be empty.
+# This is the only way to uniquely associate the joint name with the correct
+# states.
+
+
+Header header
+
+string[] name
+float64[] position
+float64[] velocity
+float64[] effort
+```
+
+## Convert to the LeRobot Format
 
 A script that converts a MobilityGen recording/replay to a [LeRobot](https://github.com/huggingface/lerobot) dataset can be found at [scripts/convert_to_lerobot.py](./scripts/convert_to_lerobot.py). The [LeRobot Python package](https://github.com/huggingface/lerobot?tab=readme-ov-file#installation) needs to be installed before executing the script.
 
@@ -614,3 +710,95 @@ python ./scripts/convert_to_lerobot.py \
   --batch \
   --fps 30
 ```
+
+## Debugging
+### Problem 1:
+There are some issues with the joint states since the rendering is done in `USD` format and we are trying to convert to ros2 compatible `URDF` format. Here is the joint order:
+```
+#  0:  torso_joint
+#  1:  right_shoulder_pitch_joint
+#  2:  left_shoulder_pitch_joint
+#  3:  right_shoulder_roll_joint
+#  4:  left_shoulder_roll_joint
+#  5:  right_shoulder_yaw_joint
+#  6:  left_shoulder_yaw_joint
+#  7:  right_ankle_joint
+#  8:  left_ankle_joint
+#  9:  right_hip_roll_joint
+# 10:  left_hip_roll_joint
+# 11:  right_knee_joint
+# 12:  left_knee_joint
+# 13:  right_hip_yaw_joint
+# 14:  left_hip_yaw_joint
+# 15:  right_hip_pitch_joint
+# 16:  left_hip_pitch_joint
+# 17:  right_elbow_joint
+# 18:  left_elbow_joint
+```
+Here is a sample value of the joint positions and velocities from a single rendered frame:
+
+| Index | Radians | Degrees     | Vel (rad/s) | Vel (deg/s) |
+| ----- | ------- | ----------- | ----------- | ----------- |
+| 0     | 0.0332  | **1.90°**   | -0.0085     | **-0.49°**  |
+| 1     | -0.0647 | **-3.71°**  | -0.0205     | **-1.17°**  |
+| 2     | -0.0125 | **-0.72°**  | 0.0040      | **0.23°**   |
+| 3     | -0.0332 | **-1.90°**  | 0.0016      | **0.09°**   |
+| 4     | -0.0277 | **-1.59°**  | 0.0019      | **0.11°**   |
+| 5     | 0.3031  | **17.37°**  | 0.0002      | **0.01°**   |
+| 6     | 0.2736  | **15.68°**  | -0.0020     | **-0.11°**  |
+| 7     | -0.6706 | **-38.42°** | -0.0042     | **-0.24°**  |
+| 8     | -0.5980 | **-34.27°** | 0.0035      | **0.20°**   |
+| 9     | -0.0508 | **-2.91°**  | 0.0014      | **0.08°**   |
+| 10    | -0.0187 | **-1.07°**  | 0.0012      | **0.07°**   |
+| 11    | 1.4435  | **82.69°**  | -0.0003     | **-0.02°**  |
+| 12    | 1.2321  | **70.59°**  | 0.0007      | **0.04°**   |
+| 13    | -0.0009 | **-0.05°**  | -0.0021     | **-0.12°**  |
+| 14    | -0.0078 | **-0.45°**  | -0.0005     | **-0.03°**  |
+| 15    | -0.6335 | **-36.29°** | 0.0017      | **0.10°**   |
+| 16    | -0.6855 | **-39.27°** | -0.0027     | **-0.15°**  |
+| 17    | 0.5276  | **30.23°**  | 0.0012      | **0.07°**   |
+| 18    | 0.5044  | **28.90°**  | -0.0000     | **-0.00°**  |
+
+The mapping has been done visually by observing the movement of the joints with the samples joint rotation angles of the Unitree H1. They may not be exactly correct and proper mapping wpuld be done by understanding how the `USD` files are publishing the robot transforms. If you any better suggestion, let me know through github issues.
+
+### Problem 2
+Pose Publishing in left camera and right camera has somw issues. Again this is probably because of the USD to ROS coordinate frame convention where:
+```
+# ROS Coordinate System
+Position:
+        1st - x
+        2nd - y
+        3rd - z
+Orientation:
+        1st - Qx
+        2nd - Qy
+        3rd - Qz
+        4th - Qw
+
+# USD Coordinate System
+Position:
+        1st - x
+        2nd - y
+        3rd - z
+Orientation:
+        1st - Qw
+        2nd - Qx
+        3rd - Qy
+        4th - Qz
+```
+Here is a visualization of the error:
+
+<div align="center">
+  <img src="assets/camera_pose_coordinate_wrong.png" width="400">
+</div>
+
+There are 3 pose topics that we are publishing:
+```
+  - /pelvis_pose                        (geometry_msgs/PoseStamped)
+  - /left_camera_pose                   (geometry_msgs/PoseStamped)
+  - /right_camera_pose                  (geometry_msgs/PoseStamped)
+```
+The `/pelvis_pose` is correctly publishing the pose in ROS coordinate frame but the other 2 are not.
+`/pelvis_pose` is being published `x` forward, `y` left and `z` up where as `/left_camera_pose` and `right_camera_pose` is publishing at `x` right, `y` up and `z` back. 
+
+Multiple rotations have been applied to correct the orientation but nothing went correct. If you know any better way please let me know through issues.
